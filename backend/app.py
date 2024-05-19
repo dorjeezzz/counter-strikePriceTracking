@@ -56,4 +56,39 @@ def submit_results():
 
     db.session.commit()
     response = {"message": "Successfully received data"}
-    return jsonify(response),200
+    return jsonify(response), 200
+
+@app.route('/unique_search_texts', methods=['GET'])
+def get_unique_search_texts():
+    unique_search_texts = db.session.query(
+        ProductResult.search_text).distinct().all()
+    unique_search_texts = [text[0] for text in unique_search_texts]
+    return jsonify(unique_search_texts)
+
+@app.route('/results')
+def get_product_results():
+    search_text = request.args.get('search_text')
+    results = ProductResult.query.filter_by(search_text=search_text).order_by(
+        ProductResult.created_at.desc()).all()
+
+    product_dict = {}
+    for result in results:
+        url = result.url
+        if url not in product_dict:
+            product_dict[url] = {
+                'name': result.name,
+                'url': result.url,
+                "img": result.img,
+                "source": result.source,
+                "created_at": result.created_at,
+                'priceHistory': []
+            }
+        product_dict[url]['priceHistory'].append({
+            'price': result.price,
+            'date': result.created_at
+        })
+
+    formatted_results = list(product_dict.values())
+
+    return jsonify(formatted_results)
+
