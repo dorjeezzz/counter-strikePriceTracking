@@ -92,3 +92,25 @@ def get_product_results():
 
     return jsonify(formatted_results)
 
+@app.route('/all-results', methods = ['GET'])
+def get_results():
+    results = ProductResult.query.all()
+    product_results = []
+    for result in results:
+        product_results.append({
+            'name': result.name,
+            'url': result.url,
+            'price': result.price,
+            'img': result.img,
+            'date': result.date,
+            'created_at': result.created_at,
+            'search_text': result.search_text,
+            'source': result.source
+        })
+    return jsonify(product_results)
+
+@app.route('/start-scrapper', methods = ['POST'])
+def start_scraper():
+    url = request.json.get('url')
+    search_text = request.json.get('search_text')
+    #should be python process for asynch running
