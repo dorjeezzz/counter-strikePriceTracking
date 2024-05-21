@@ -114,3 +114,17 @@ def start_scraper():
     url = request.json.get('url')
     search_text = request.json.get('search_text')
     #should be python process for asynch running
+    command = = f"python ./scraper/__init__.py {url} \"{search_text}\" /results"
+    subprocess.Popen(command, shell=True)
+    response = {'message': 'scraper successfully has begun'}
+    return jsonify(response), 200
+
+@app.route('/add-tracked-product', methods = ['POST'])
+def add_tracked_product():
+    name = request.json.get('name')
+    tracked_product = TrackedProducts(name = name)
+    db.session.add(tracked_product)
+    db.session.commit()
+    response = {'message': 'Tracked product added successfully',
+                'id': tracked_product.id}
+    return jsonify(response), 200
