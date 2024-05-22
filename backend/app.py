@@ -116,8 +116,8 @@ def start_scraper():
     #should be python process for asynch running
     command = = f"python ./scraper/__init__.py {url} \"{search_text}\" /results"
     subprocess.Popen(command, shell=True)
-    response = {'message': 'scraper successfully has begun'}
-    return jsonify(response), 200
+    msg = {'message': 'scraper successfully has begun'}
+    return jsonify(msg), 200
 
 @app.route('/add-tracked-product', methods = ['POST'])
 def add_tracked_product():
@@ -125,6 +125,32 @@ def add_tracked_product():
     tracked_product = TrackedProducts(name = name)
     db.session.add(tracked_product)
     db.session.commit()
-    response = {'message': 'Tracked product added successfully',
+    msg = {'message': 'Tracked product added successfully',
                 'id': tracked_product.id}
-    return jsonify(response), 200
+    return jsonify(msg), 200
+
+@app.route('/tracked-product/<int:product_id>', methods = ['PUT'])
+def toggle_tracked_product(product_id):
+    tracked_product = TrackedProducts.query.get(product_id)
+    if tracked_product is None:
+        msg = {"message": "Error: Product not found"}
+        return jsonify(msg), 404
+    
+    tracked_product.tracked = not tracked_product.tracked
+    db.session.commit()
+    msg = {"message": "Successfully toggled tracked product!"}
+    return jsonify(msg), 200
+
+@app.route('/tracked-products', methods = ['GET'])
+def get_tracked_products():
+    tracked_products = TrackedProducts.query.all()
+    res = []
+    for prod in tracked_products
+        res.append({
+            "id": product.id,
+            "name": product.name,
+            "created_at": product.created_at,
+            "tracked": product.tracked
+        })
+    return jsonify(res), 200
+
