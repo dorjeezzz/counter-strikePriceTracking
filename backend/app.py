@@ -154,3 +154,24 @@ def get_tracked_products():
         })
     return jsonify(res), 200
 
+@app.route("/update-tracked-products", methods = ['POST'])
+def update_tracked_products():
+    tracked_products: TrackedProducts.query.all()
+    url = "https://csfloat.com/"
+    skin_names = []
+    for tracked_product in tracked_products:
+        name = tracked_product.name
+        if not tracked_product.tracked:
+            continue
+        command = f"python ./scraper/__init__.py {url} \"{name}\" /results"
+        subprocess.Popen(command, shell=True)
+        skin.append(name)
+
+    msg = {"message": "Scrapers successfully started",
+    "products": skin_names}
+    return jsonify(msg), 200
+
+if __name__ = '__main__':
+    with app.app_context():
+        db.create_all()
+    app.run()
