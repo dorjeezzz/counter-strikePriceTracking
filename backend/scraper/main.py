@@ -42,7 +42,26 @@ async def search(metadata, page, search_text):
     await page.wait_for_load_state()
     return page
 
+async def get_products(page, search_text, selector, get_product):
+    print("Retrieving product(s).")
+    product_divs = await page.query_selector_all(selector)
+    valid_products = []
+    words = search_text.split(" ")
 
+    async with asyncio.TaskGroup() as tg:
+        for div in product_divs:
+            async def task(p_div):
+                product = await get_product(p_div)
+
+                if not product["price"] or not product["url"]: return
+                for word in words:
+                    if not product["name"] or word.lower() not in product["name"].lower():
+                        break
+                    else:
+                        valid_products.append(product)
+                tg.create_task(task(div))
+                
+    return valid_products
 
 def save_results(results):
     data = {"results": results}
