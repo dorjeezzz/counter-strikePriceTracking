@@ -8,7 +8,7 @@ from requests import post
 FLOAT = "https://csfloat.com"
 
 URLS = {
-    FLOAT:{
+    CSFLOAT:{
         "search_field_query": 'input[name="field-keywords"]',
         "search_button_query": 'input[value="Go"]',
         #get back to this step later
@@ -41,3 +41,16 @@ async def search(metadata, page, search_text):
 
     await page.wait_for_load_state()
     return page
+
+
+
+def save_results(results):
+    data = {"results": results}
+    FILE = os.path.join("Scraper", "results.json")
+    with open(FILE, "w") as f:
+        json.dump(data, f)
+
+
+#test script
+if __name__ == "__main__":
+    asyncio.run(main(CSFLOAT, "M4A4 howl"))
