@@ -2,7 +2,7 @@ import asyncio
 from playwright.async_api import async_playwright
 import json
 import os
-from amazon import get_product as get_amazon_product
+from csfloat import get_product as get_csfloat_product
 from requests import post
 
 FLOAT = "https://csfloat.com"
@@ -89,6 +89,26 @@ async def main(url, search_text, response_route):
     if not metadata:
         print("Invalid URL")
         return
+    
+    async with async_playwright() as pw:
+        print("Connecting to browser...")
+        browser = await pw.chromium.connect_over_cdp(browser_url)
+        page = await browser.new_page()
+        print("Connected!")
+        await page.goto(url, timeout = 120000)
+        print("Initial page is loaded")
+        search_page = await search(metadata, page, search_text)
+
+        def func(x): return None
+        if url == CSFLOAT:
+            func = get_csfloat_product
+        else:
+            raise Exception("Invalid URL")
+    
+        results = await get_product(search_page, search_text, metadata["product_selector"], func)
+        print("Saving results...")
+        post_results(results, response_route, search_text, url)
+
 #test script
 if __name__ == "__main__":
     asyncio.run(main(CSFLOAT, "M4A4 howl"))
