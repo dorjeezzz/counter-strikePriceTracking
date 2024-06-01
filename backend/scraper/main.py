@@ -11,7 +11,7 @@ URLS = {
     CSFLOAT:{
         "search_field_query": 'input[name="field-keywords"]',
         "search_button_query": 'input[value="Go"]',
-        #get back to this step later
+        "product_selector": "div.s-card-container"
     }
 }
 
@@ -26,6 +26,7 @@ cred = load_auth()
 auth = f'{cred["username"]}:{cred["password"]}'
 browser_url = f'wss://{auth}@{cred["host"]}'
 #should successfully take in credentials 
+
 async def search(metadata, page, search_text):
     print(f"Looking for {search_text} on {page.url}")
     search_field_query = metadata.get("search_field_query")
@@ -69,7 +70,25 @@ def save_results(results):
     with open(FILE, "w") as f:
         json.dump(data, f)
 
+def post_results(results, endpoint, search_text, source):
+    headers = {
+        "Content-Type": "applications/json"
+    }
+    data = {
+        "data": results,
+        "search_text": search_text,
+        "source": source
+    }
+    print("Sending Request to: ", endpoint)
+    response = post("http://localhost:5000"+endpoint,
+        headers=headers, json=data)
+    print("Status code: ", response.status_code)
 
+async def main(url, search_text, response_route):
+    metadata = URLS.get(url)
+    if not metadata:
+        print("Invalid URL")
+        return
 #test script
 if __name__ == "__main__":
     asyncio.run(main(CSFLOAT, "M4A4 howl"))
