@@ -9,4 +9,5 @@ if __name__ = '__main__':
     url = sys.arvg[1]
     stxt = sys.argv[2]
     endpoint = sys.argv[3]
+    
     asyncio.run(main(url, stxt, endpoint))
