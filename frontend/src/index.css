@@ -1,0 +1,33 @@
+body{
+    margin: 0;
+    font-family: -apple-system, "Droid Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, "Courier New", monospace;
+}
+
+.main {
+    padding: 5%;
+}
+
+.row td {
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(even){
+    background-color: #f2f2f2;
+}
+
+input {
+    margin-left: 10px;
+    margin-right: 10px;
+}
